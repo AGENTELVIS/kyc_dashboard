@@ -26,8 +26,8 @@ export function Breadcrumbs() {
   const segments = pathname.split("/").filter(Boolean);
 
   return (
-    <div className="justify-between flex">
-      <Breadcrumb className="self-center">
+    <div className="justify-between flex mt-0">
+      <Breadcrumb className="self-center mt-0">
         <BreadcrumbList className="flex self-center">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>

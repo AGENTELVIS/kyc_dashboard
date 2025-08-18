@@ -22,10 +22,10 @@ import { useDashboard } from "@/context/Filtercontext";
 
 const chartConfig = {
   today: { label: "Today", color: "#2563eb" },
-  compare: { label: "Compare", color: "#60a5fa" },
+  yesterday: { label: "Yesterday", color: "#60a5fa" },
 };
 
-function pickCompareBar(barChart: any) {
+function pickyesterdayBar(barChart: any) {
   if (!barChart) return { individual: 0, nonIndividual: 0 };
   if (barChart.yesterday) return barChart.yesterday;
 
@@ -46,18 +46,18 @@ export default function BarCharts() {
   useEffect(() => {
     const allBars = (rawData as any)?.barChart ?? {};
     const currentBar = getSection("barChart") ?? { individual: 0, nonIndividual: 0 };
-    const compareBar = pickCompareBar(allBars);
+    const yesterdayBar = pickyesterdayBar(allBars);
 
     const formattedData = [
       {
         category: "Individual",
         today: currentBar.individual ?? 0,
-        compare: compareBar.individual ?? 0,
+        yesterday: yesterdayBar.individual ?? 0,
       },
       {
         category: "Non-Individual",
         today: currentBar.nonIndividual ?? currentBar["nonIndividual"] ?? 0,
-        compare: compareBar.nonIndividual ?? compareBar["nonIndividual"] ?? 0,
+        yesterday: yesterdayBar.nonIndividual ?? yesterdayBar["nonIndividual"] ?? 0,
       },
     ];
     setChartData(formattedData);
@@ -91,7 +91,7 @@ export default function BarCharts() {
             <ChartTooltip content={<ChartTooltipContent />} />
 
             <Bar dataKey="today" fill="#2563eb" radius={4} barSize={30} />
-            <Bar dataKey="compare" fill="#60a5fa" radius={4} barSize={30} />
+            <Bar dataKey="yesterday" fill="#60a5fa" radius={4} barSize={30} />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>

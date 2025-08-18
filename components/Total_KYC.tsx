@@ -43,8 +43,8 @@ export default function Total_KYC() {
     "-";
 
   return (
-    <Card className="mt-4 w-full max-w-full lg:w-4/7 min-h-[420px] bg-white dark:bg-zinc-900">
-      <CardContent className="p-4 pt-0 pb-0">
+    <Card className="mt-4 w-full max-w-full lg:w-4/7 min-h-[420px] bg-white dark:bg-neutral-900">
+      <CardContent className="p-3 pt-0 pb-0">
         <p className="text-xs text-gray-500 dark:text-gray-300 font-semibold rounded-sm">Total KYCs</p>
         <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalCount}</span>
 
@@ -53,12 +53,15 @@ export default function Total_KYC() {
           <div
             onClick={() => setActiveCard("new")}
             className={cn(
-              "bg-gray-100 dark:bg-zinc-800 p-4 cursor-pointer transition-all duration-300 rounded-sm",
+              "bg-gray-100 dark:bg-zinc-800 p-3 cursor-pointer transition-all duration-300 rounded-sm",
               activeCard === "new" ? "shadow-sm scale-[1.02] bg-white dark:bg-zinc-700" : "opacity-80 hover:opacity-100"
             )}  
           >
             <div className="flex items-start gap-2 flex-wrap">
-              <BsArrowDownLeftCircleFill className="text-blue-600 h-7 w-7 mt-0.5 flex-shrink-0" />
+              <div className="inline-flex text-blue-600 mt-0.5 flex-shrink-0">
+                <BsArrowDownLeftCircleFill className="h-9 w-9" />  
+              </div>
+              
               <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">New KYC</span>
               <span className="ml-1 bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-400 flex items-center rounded-sm px-1.5 py-0.5 text-xs flex-shrink-0">
                 <ChevronsUp className="h-3 w-3 mr-0.5" />
@@ -80,7 +83,10 @@ export default function Total_KYC() {
             )}
           >
             <div className="flex items-start gap-2 flex-wrap">
-              <PiClockClockwise className="bg-blue-600 text-white rounded-full p-1 h-7 w-7 mt-0.5 flex-shrink-0" />
+              <div className="inline-flex p-1 bg-blue-600 text-white rounded-full mt-0.5 flex-shrink-0">
+                <PiClockClockwise className="h-7 w-7" />
+              </div>
+              
               <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Modified KYC</span>
               <span className="ml-1 bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400 flex items-center rounded-sm px-1.5 py-0.5 text-xs flex-shrink-0">
                 <ChevronsDown className="h-3 w-3 mr-0.5" />

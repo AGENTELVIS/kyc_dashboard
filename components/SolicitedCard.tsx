@@ -26,8 +26,8 @@ const SolicitedCard: React.FC = () => {
   const kfinKRA = piece.kfinKRA ?? "-";
 
   return (
-    <Card className="mt-4 p-3 pb-4 h-full">
-      <div className="flex items-center justify-between mb-0">
+    <Card className=" p-3 pb-4 h-full">
+      <div className="flex items-center justify-between mb-0 mt-2">
         <div className="flex gap-3">
           <button
             onClick={() => setSolType("solicited")}

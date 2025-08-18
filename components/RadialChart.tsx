@@ -17,7 +17,7 @@ export const RadialChart: React.FC<Props> = ({ data, total, size = 360 }) => {
   return (
     <div className="flex items-start gap-4 w-full">
       <div
-        className="relative flex-shrink-0 [&_.recharts-radial-bar-background-sector]:fill-gray-200 dark:[&_.recharts-radial-bar-background-sector]:fill-zinc-700"
+        className="relative flex-shrink-0 [&_.recharts-radial-bar-background-sector]:fill-[#e5e7eb] dark:[&_.recharts-radial-bar-background-sector]:fill-[#3f3f46]"
         style={{ width: size, height: size, minWidth: size, minHeight: size }}
       >
         <ResponsiveContainer width="100%" height="100%">
@@ -36,7 +36,7 @@ export const RadialChart: React.FC<Props> = ({ data, total, size = 360 }) => {
               background={{ 
                 fill: "#f3f4f6"
               }} 
-              className="dark:fill-zinc-700"
+              className="dark:fill-[#3f3f46]"
             />
           </RadialBarChart>
         </ResponsiveContainer>

@@ -43,12 +43,12 @@ export default function KYC_statusCards() {
         </Tabs>
       </div>
 
-      <Card className="m-2 mt-4 p-3 rounded-sm shadow-none border-0 outline-0 bg-white dark:bg-zinc-900">
+      <Card className=" mt-4 p-3 rounded-sm shadow-none border-0 outline-0 bg-white dark:bg-zinc-900">
         <div className="overflow-x-auto">
-          <div className="flex items-stretch justify-between gap-4 min-w-max">
+          <div className="flex items-stretch justify-between min-w-max">
             {statuses.map((status: any, idx: number) => (
               <React.Fragment key={status.label}>
-                <div className="flex flex-col items-start min-w-[80px] text-start">
+                <div className="flex flex-col items-start min-w-[65px] text-start">
                   {ICONS[status.label]}
                   <p className="text-[11px] font-semibold text-gray-500 mt-2 leading-tight text-start">
                     {status.label}

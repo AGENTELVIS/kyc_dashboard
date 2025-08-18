@@ -78,8 +78,8 @@ const PanData: React.FC = () => {
     <div className="w-full lg:w-full">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0">
-            <FaIdCardClip className="rounded-full bg-blue-100 text-blue-700 p-2 h-10 w-10" />
+          <div className="flex-shrink-0 inline-flex rounded-full bg-blue-100 text-blue-700 p-2 h-10 w-10">
+            <FaIdCardClip className="align-middle items-center h-6 w-6 self-center"  style={{ display: "inline-block" }}/>
           </div>
 
           <div className="flex flex-col">
@@ -100,8 +100,8 @@ const PanData: React.FC = () => {
       <hr className="my-3 border-gray-200 mb-5 mt-4" />
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0">
-            <BiSolidLeftDownArrowCircle className="rounded-full bg-green-100 text-green-700 p-2 h-10 w-10" />
+          <div className="flex-shrink-0 inline-flex rounded-full bg-green-100 text-green-700 p-1 h-10 w-10">
+            <BiSolidLeftDownArrowCircle className="h-8 w-8 slef-center" style={{ display: "inline-block" }}/>
           </div>
 
           <div className="flex flex-col">
