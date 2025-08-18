@@ -20,7 +20,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex-shrink-0 hidden md:flex sticky top-0 h-screen w-36 bg-white dark:bg-black border-r border-gray-200 dark:border-zinc-800 shadow-sm flex-col items-center py-4">
+    <aside className=" min-h-screen max-h-screen flex-shrink-0 hidden md:flex sticky top-0 h-full w-36 bg-white dark:bg-black border-r border-gray-200 dark:border-zinc-800 shadow-sm flex-col items-center py-4">
       <Link href="/" className="mb-6">
         <img
           src="/KYC_logo.png"
