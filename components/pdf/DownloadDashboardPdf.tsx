@@ -110,9 +110,7 @@ export default function DownloadDashboardPdf({
     }
 
     const cloned = target.cloneNode(true) as HTMLElement;
-
     Array.from(cloned.querySelectorAll("*")).forEach((el) => sanitizeElementForPrint(el));
-
     const svgs = Array.from(cloned.querySelectorAll<SVGSVGElement>("svg"));
     svgs.forEach((svg) => inlineSvgComputedStyles(svg));
 
@@ -147,10 +145,8 @@ export default function DownloadDashboardPdf({
     `);
     printWindow.document.close();
 
-
     const imported = printWindow.document.importNode(cloned, true);
     printWindow.document.body.appendChild(imported);
-
 
     try {
       const imgs = Array.from(printWindow.document.images || []);
@@ -174,13 +170,15 @@ export default function DownloadDashboardPdf({
       console.warn("Resource loading issues before print:", err);
     }
 
- 
     printWindow.focus();
+
+    // Use onafterprint to close the window as soon as the user is done
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
+
     setTimeout(() => {
       printWindow.print();
-      setTimeout(() => {
-        printWindow.close();
-      }, 1200);
     }, 300);
   };
 
