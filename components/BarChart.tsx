@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdBarChart, MdFormatListBulleted } from "react-icons/md";
 import {
   Bar,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDashboard } from "@/context/Filtercontext";
+import DownloadDashboardPdf from "./pdf/DownloadDashboardPdf";
 
 const chartConfig = {
   today: { label: "Today", color: "#2563eb" },
@@ -42,6 +43,7 @@ export default function BarCharts() {
   const { getSection, rawData } = useDashboard();
   const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const dashboardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const allBars = (rawData as any)?.barChart ?? {};
@@ -67,7 +69,7 @@ export default function BarCharts() {
 
   return (
     <div>
-      <Tabs defaultValue="chart" className="items-end rounded-full mr-5 ">
+      <Tabs defaultValue="chart" className="items-end rounded-full mr-5 " ref={dashboardRef}>
         <TabsList className="rounded-full h-10 w-20">
           <TabsTrigger value="chart" className="rounded-full">
             <MdBarChart />
@@ -78,8 +80,8 @@ export default function BarCharts() {
         </TabsList>
       </Tabs>
 
-      <ChartContainer config={chartConfig} className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <ChartContainer config={chartConfig} className="h-[300px] min-w-full w-full" >
+        <ResponsiveContainer width="100%" height="100%" >
           <BarChart data={chartData} barCategoryGap="30%">
             <ChartLegend verticalAlign="top" align="center" content={<ChartLegendContent />} />
 

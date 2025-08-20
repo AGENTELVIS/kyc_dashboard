@@ -15,12 +15,12 @@ export const RadialChart: React.FC<Props> = ({ data, total, size = 360 }) => {
   const outerRadius = "100%";
 
   return (
-    <div className="flex items-start gap-4 w-full">
+    <div className="flex items-center gap-4 w-full align-middle text-center self-center">
       <div
-        className="relative flex-shrink-0 [&_.recharts-radial-bar-background-sector]:fill-[#e5e7eb] dark:[&_.recharts-radial-bar-background-sector]:fill-[#3f3f46]"
+        className="relative align-middle text-center self-center flex-shrink-0 [&_.recharts-radial-bar-background-sector]:fill-[#e5e7eb] dark:[&_.recharts-radial-bar-background-sector]:fill-[#3f3f46]"
         style={{ width: size, height: size, minWidth: size, minHeight: size }}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" className="w-full md:w-full sm:w-full align-middle self-center text-center">
           <RadialBarChart
             cx="50%"
             cy="50%"
@@ -29,6 +29,7 @@ export const RadialChart: React.FC<Props> = ({ data, total, size = 360 }) => {
             data={data}
             startAngle={90}
             endAngle={-270}
+            className="w-full align-middle self-center text-center"
           >
             <RadialBar 
               dataKey="value" 
@@ -48,7 +49,7 @@ export const RadialChart: React.FC<Props> = ({ data, total, size = 360 }) => {
         )}
       </div>
 
-      <div className="flex flex-col gap-2 flex-1 min-w-0">
+      <div className="flex flex-col gap-2 flex-1 min-w-0 align-middle self-center text-center">
         {data.map((d) => (
           <div key={d.name} className="flex items-center gap-2 whitespace-nowrap">
             <span

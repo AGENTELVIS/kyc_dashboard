@@ -1,7 +1,9 @@
+import { RadialChart } from "@/components/RadialChart"
 
 const page = () => {
   return (
-    <div>Notices</div>
+    <div>
+    </div>
   )
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card } from "./ui/card";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDashboard } from "@/context/Filtercontext";
+import DownloadDashboardPdf from "./pdf/DownloadDashboardPdf";
 
 function pickCompareCategory(categoryObj: any) {
   if (!categoryObj) return { RI: 0, NRI: 0 };
@@ -28,6 +29,7 @@ const CategoriesCard = () => {
   const { getSection, filterKey } = useDashboard();
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"individual" | "nonIndividual">("individual");
+  const dashboardRef = useRef<HTMLDivElement>(null);
 
 
   if (loading) {
@@ -43,7 +45,7 @@ const CategoriesCard = () => {
 
   return (
     <TooltipProvider>
-      <Card className="mt-4 w-full flex mr-6">
+      <Card className="mt-4 w-full flex mr-6" ref={dashboardRef}>
         <div className="flex justify-between m-3 mt-0 mb-0 gap-26">
           <h2 className="font-bold self-center mb-0">Categories</h2>
           <Tabs
@@ -63,8 +65,8 @@ const CategoriesCard = () => {
         </div>
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="m-3 mt-0 mb-0 cursor-pointer">
+          <TooltipTrigger asChild >
+            <div className="m-3 mt-0 mb-0 cursor-pointer" >
               <div className="flex justify-between items-center mb-1">
                 <p className="text-[12px] text-gray-500 font-semibold">RI</p>
               </div>

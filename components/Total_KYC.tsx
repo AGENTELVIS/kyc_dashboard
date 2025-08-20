@@ -43,7 +43,7 @@ export default function Total_KYC() {
     "-";
 
   return (
-    <Card className="mt-4 w-full max-w-full lg:w-4/7 min-h-[420px] bg-white dark:bg-neutral-900">
+    <Card className="mt-4 w-full max-w-full lg:w-full md:w-full min-h-[420px] bg-white dark:bg-neutral-900">
       <CardContent className="p-3 pt-0 pb-0">
         <p className="text-xs text-gray-500 dark:text-gray-300 font-semibold rounded-sm">Total KYCs</p>
         <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalCount}</span>
