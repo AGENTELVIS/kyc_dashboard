@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ResponsiveContainer, RadialBarChart, RadialBar, Tooltip } from "recharts";
+import { ResponsiveContainer, RadialBarChart, RadialBar } from "recharts";
 
 interface Item { name: string; value: number; fill: string }
 interface Props {

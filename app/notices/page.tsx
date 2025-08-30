@@ -1,4 +1,4 @@
-import { RadialChart } from "@/components/RadialChart"
+
 
 const page = () => {
   return (

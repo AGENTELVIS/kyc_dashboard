@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, Tag, Megaphone } from "lucide-react";
 import { TbNotes } from "react-icons/tb";
 import { HiOutlineCash } from "react-icons/hi";
-import { FaRegCopy } from "react-icons/fa";
 
 const bottomBarContent = [
   { label: "Dashboard", href: "/dashboard", icon: <LayoutDashboard size={20} /> },

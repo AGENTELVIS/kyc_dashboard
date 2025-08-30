@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/chart";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDashboard } from "@/context/Filtercontext";
-import DownloadDashboardPdf from "./pdf/DownloadDashboardPdf";
+
 
 const chartConfig = {
   today: { label: "Today", color: "#2563eb" },

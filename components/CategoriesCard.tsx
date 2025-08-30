@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Card } from "./ui/card";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -11,7 +12,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDashboard } from "@/context/Filtercontext";
-import DownloadDashboardPdf from "./pdf/DownloadDashboardPdf";
 
 function pickCompareCategory(categoryObj: any) {
   if (!categoryObj) return { RI: 0, NRI: 0 };
@@ -27,7 +27,7 @@ function pickCompareCategory(categoryObj: any) {
 
 const CategoriesCard = () => {
   const { getSection, filterKey } = useDashboard();
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"individual" | "nonIndividual">("individual");
   const dashboardRef = useRef<HTMLDivElement>(null);
 

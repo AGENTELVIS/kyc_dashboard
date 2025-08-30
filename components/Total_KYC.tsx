@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { BsArrowDownLeftCircleFill } from "react-icons/bs";
 import { PiClockClockwise } from "react-icons/pi";

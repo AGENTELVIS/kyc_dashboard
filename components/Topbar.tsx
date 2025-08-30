@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
-import { Search, BellDot, ChevronDown, Menu } from "lucide-react";
+import { Search, BellDot, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState } from "react";
