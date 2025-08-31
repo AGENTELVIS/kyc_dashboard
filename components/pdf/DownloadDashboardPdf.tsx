@@ -107,10 +107,14 @@ function inlineSvgComputedStyles(svg: SVGSVGElement) {
 /** Wait for images/fonts inside a document (or fragment) to load */
 async function waitForResources(doc: Document | ShadowRoot | HTMLElement) {
   try {
-    const imgs = Array.from((doc as any).images || []);
+    // Cast the images properly
+    const imgs: HTMLImageElement[] = Array.from(
+      (doc as Document).images ?? []
+    ) as HTMLImageElement[];
+
     await Promise.all(
       imgs.map(
-        (img: HTMLImageElement) =>
+        (img) =>
           new Promise<void>((res) => {
             if (img.complete) return res();
             img.onload = () => res();
@@ -128,6 +132,7 @@ async function waitForResources(doc: Document | ShadowRoot | HTMLElement) {
     console.warn("Resource loading issues before print:", err);
   }
 }
+
 
 export default function DownloadDashboardPdf({
   dashboardRef,
