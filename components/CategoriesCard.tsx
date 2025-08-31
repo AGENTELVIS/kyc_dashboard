@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useDashboard } from "@/context/Filtercontext";
 
+
 function pickCompareCategory(categoryObj: any) {
   if (!categoryObj) return { RI: 0, NRI: 0 };
   if (categoryObj.yesterday) return categoryObj.yesterday;
@@ -70,7 +71,7 @@ const CategoriesCard = () => {
               <div className="flex justify-between items-center mb-1">
                 <p className="text-[12px] text-gray-500 font-semibold">RI</p>
               </div>
-              <Progress value={today.RI ?? 0} className="mb-1 h-2 [&>div]:bg-[#2563eb]" />
+              <Progress value={today.RI ?? 0} className="mb-1 h-2 [&>div]:bg-[#2563eb]"/>
               <Progress value={compare.RI ?? 0} className="h-2 [&>div]:bg-[#60a5fa]" />
             </div>
           </TooltipTrigger>

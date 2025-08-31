@@ -10,6 +10,60 @@ type Props = {
   buttonClassName?: string;
 };
 
+function copyProgressWidths(original: HTMLElement, cloned: HTMLElement) {
+  // Find all progress bars in original
+  const originalProgressBars = original.querySelectorAll('[role="progressbar"], .progress, [data-radix-collection-item]');
+  const clonedProgressBars = cloned.querySelectorAll('[role="progressbar"], .progress, [data-radix-collection-item]');
+  
+  originalProgressBars.forEach((origBar, index) => {
+    if (clonedProgressBars[index]) {
+      // Find the inner div that represents the fill (usually the first child div)
+      const origFill = origBar.querySelector('div');
+      const clonedFill = clonedProgressBars[index].querySelector('div');
+      
+      if (origFill && clonedFill) {
+        // Get computed width from original
+        const computedStyle = window.getComputedStyle(origFill);
+        const width = computedStyle.width;
+        const transform = computedStyle.transform;
+        
+        // Apply to cloned element
+        (clonedFill as HTMLElement).style.width = width;
+        if (transform && transform !== 'none') {
+          (clonedFill as HTMLElement).style.transform = transform;
+        }
+        
+        // Also copy any data attributes that might control width
+        if (origFill.hasAttribute('data-value')) {
+          clonedFill.setAttribute('data-value', origFill.getAttribute('data-value') || '');
+        }
+        
+        // For Radix UI Progress component specifically
+        if (origFill.hasAttribute('data-state')) {
+          clonedFill.setAttribute('data-state', origFill.getAttribute('data-state') || '');
+        }
+        if (origFill.hasAttribute('data-max')) {
+          clonedFill.setAttribute('data-max', origFill.getAttribute('data-max') || '');
+        }
+      }
+    }
+  });
+  
+  // Also handle inline styles for transform-based progress bars
+  const origTransformElements = original.querySelectorAll('[style*="transform"], [style*="width"]');
+  const clonedTransformElements = cloned.querySelectorAll('[style*="transform"], [style*="width"]');
+  
+  origTransformElements.forEach((origEl, index) => {
+    if (clonedTransformElements[index]) {
+      const origStyle = (origEl as HTMLElement).style;
+      const clonedStyle = (clonedTransformElements[index] as HTMLElement).style;
+      
+      if (origStyle.width) clonedStyle.width = origStyle.width;
+      if (origStyle.transform) clonedStyle.transform = origStyle.transform;
+    }
+  });
+}
+
 function copyStylesHtml() {
   const nodes = Array.from(
     document.querySelectorAll("link[rel=stylesheet], style, link[rel=preload]")
@@ -107,10 +161,9 @@ function inlineSvgComputedStyles(svg: SVGSVGElement) {
 /** Wait for images/fonts inside a document (or fragment) to load */
 async function waitForResources(doc: Document | ShadowRoot | HTMLElement) {
   try {
-    // Cast the images properly
-    const imgs: HTMLImageElement[] = Array.from(
-      (doc as Document).images ?? []
-    ) as HTMLImageElement[];
+    const imgs: HTMLImageElement[] = (doc instanceof Document
+      ? Array.from(doc.images || [])
+      : Array.from((doc as HTMLElement).querySelectorAll?.("img") || [])) as HTMLImageElement[];
 
     await Promise.all(
       imgs.map(
@@ -133,6 +186,11 @@ async function waitForResources(doc: Document | ShadowRoot | HTMLElement) {
   }
 }
 
+/**
+ * Copy computed progress widths from original DOM into cloned DOM.
+ * - Looks for elements with role=progressbar, elements with class names containing 'progress',
+ *   and common fill selectors; pairs them by order.
+ */
 
 export default function DownloadDashboardPdf({
   dashboardRef,
@@ -144,20 +202,54 @@ export default function DownloadDashboardPdf({
       return;
     }
 
-    // 1) Clone and sanitize the node (same behavior as your original)
+    // Clone and sanitize
     const cloned = target.cloneNode(true) as HTMLElement;
-    Array.from(cloned.querySelectorAll("*")).forEach((el) => sanitizeElementForPrint(el));
+    
+    // IMPORTANT: Copy progress widths BEFORE sanitizing
+    copyProgressWidths(target, cloned);
+    
+    // Now sanitize (but preserve the widths we just set)
+    Array.from(cloned.querySelectorAll("*")).forEach((el) => {
+      const elem = el as HTMLElement;
+      // Skip sanitizing width and transform for progress elements
+      if (elem.closest('[role="progressbar"]') || elem.closest('.progress')) {
+        // Apply minimal sanitization without affecting size/position
+        const unsafe: Record<string, string> = {
+          filter: "none",
+          "backdrop-filter": "none",
+          "clip-path": "none",
+          "mask-image": "none",
+        };
+        const existing = elem.getAttribute("style") || "";
+        let override = "";
+        for (const [k, v] of Object.entries(unsafe)) {
+          override += `${k}:${v} !important;`;
+        }
+        elem.setAttribute("style", existing + override);
+      } else {
+        sanitizeElementForPrint(el);
+      }
+    });
+    
     const svgs = Array.from(cloned.querySelectorAll<SVGSVGElement>("svg"));
     svgs.forEach((svg) => inlineSvgComputedStyles(svg));
 
-    // 2) Build styles and wrapper
+    // Build styles with explicit progress bar preservation
     const stylesHtml = copyStylesHtml();
     const additional = `
       <style>
-        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        @page { margin: 12mm; }
+        html, body { height: 100%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { background: #fff; margin: 0; padding: 12mm; box-sizing: border-box; }
         svg { shape-rendering: geometricPrecision; }
         * { filter: none !important; -webkit-filter: none !important; box-shadow: none !important; }
-        body { background: #fff; margin: 0; }
+        
+        /* Preserve progress bar styles */
+        [role="progressbar"] > div,
+        .progress > div {
+          transition: none !important;
+          animation: none !important;
+        }
       </style>
     `;
 
@@ -177,8 +269,7 @@ export default function DownloadDashboardPdf({
       </html>
     `;
 
-    // wait for images/fonts inside the cloned fragment (so native print captures them)
-    // create a temporary container in DOM (hidden) to allow resources to load
+    // 3) attach to hidden container so resources load and computed sizes are available
     const container = document.createElement("div");
     container.style.position = "fixed";
     container.style.left = "-9999px";
@@ -187,17 +278,40 @@ export default function DownloadDashboardPdf({
     container.style.pointerEvents = "none";
     container.innerHTML = printableHtml;
     document.body.appendChild(container);
+
+    // wait for images/fonts so widths are accurate
     await waitForResources(container);
-    // remove the helper container after resources loaded
+
+    // give the browser a tick to layout
+    await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+
+    // COPY the progress widths from the live (original) DOM into the cloned container
+
+    // remove helper container (we already copied inline widths into container's elements)
+    // But we need clone's innerHTML updated to reflect those inline styles:
+    const finalHtml = `
+      <!doctype html>
+      <html>
+        <head>
+          <base href="${location.origin}">
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          ${stylesHtml}
+          ${additional}
+        </head>
+        <body>
+          ${container.innerHTML}
+        </body>
+      </html>
+    `;
+
     document.body.removeChild(container);
 
-    // 3) If running in Capacitor native -> use native plugin
+    // 4) If running in Capacitor native -> use native plugin
     const isNative = Capacitor.isNativePlatform();
     if (isNative) {
       try {
-        // dynamic import - will fail harmlessly on web where plugin isn't installed
-        const printerModule: any = await import("@bcyesil/capacitor-plugin-printer").catch((e) => {
-          // plugin not found; try capawesome style package name fallback
+        const printerModule: any = await import("@bcyesil/capacitor-plugin-printer").catch(() => {
           return (globalThis as any).Printer ? { Printer: (globalThis as any).Printer } : null;
         });
 
@@ -206,10 +320,10 @@ export default function DownloadDashboardPdf({
           console.warn(
             "Printer plugin not available. Make sure you installed a capacitor printer plugin and ran `npx cap sync`."
           );
-          // fallback to opening system browser to print (less ideal)
+          // fallback to web print
           const w = window.open();
           if (w) {
-            w.document.write(printableHtml);
+            w.document.write(finalHtml);
             w.document.close();
             w.focus();
             setTimeout(() => w.print(), 300);
@@ -217,11 +331,9 @@ export default function DownloadDashboardPdf({
           return;
         }
 
-        // call native print - plugin will show native print dialog where user can Save as PDF
         await Printer.print({
-          content: printableHtml,
+          content: finalHtml,
           name: "Dashboard",
-          // plugin-specific options may be accepted; these are example fields
           orientation: "portrait",
           duplex: false,
         });
@@ -232,7 +344,7 @@ export default function DownloadDashboardPdf({
       }
     }
 
-    // 4) Web/Desktop fallback: use the old window.open -> print approach
+    // 5) Web/Desktop fallback: open print window
     const printWindow = window.open("", "_blank");
     if (!printWindow) {
       alert("Unable to open print window (popup blocked).");
@@ -240,10 +352,9 @@ export default function DownloadDashboardPdf({
     }
 
     printWindow.document.open();
-    printWindow.document.write(printableHtml);
+    printWindow.document.write(finalHtml);
     printWindow.document.close();
 
-    // Wait for resources in that new window
     try {
       await waitForResources(printWindow.document);
     } catch {
@@ -261,7 +372,7 @@ export default function DownloadDashboardPdf({
 
   return (
     <Button onClick={handlePrint} className="mt-0 mb-1 rounded-full">
-      Print / Save as PDF2
+      Print / Save as PDF
     </Button>
   );
 }
