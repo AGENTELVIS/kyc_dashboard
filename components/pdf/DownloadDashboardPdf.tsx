@@ -238,9 +238,9 @@ export default function DownloadDashboardPdf({
     const stylesHtml = copyStylesHtml();
     const additional = `
       <style>
-        @page { margin: 12mm; }
+        @page { margin: 2mm; }
         html, body { height: 100%; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        body { background: #fff; margin: 0; padding: 12mm; box-sizing: border-box; }
+        body { background: #fff; margin: 0; padding: 4mm; box-sizing: border-box; }
         svg { shape-rendering: geometricPrecision; }
         * { filter: none !important; -webkit-filter: none !important; box-shadow: none !important; }
         
