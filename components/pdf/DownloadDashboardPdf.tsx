@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { Printer } from '@bcyesil/capacitor-plugin-printer';
+
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Capacitor } from "@capacitor/core";
 
 type Props = {
   dashboardRef: React.RefObject<HTMLDivElement | null>;
@@ -10,7 +11,9 @@ type Props = {
 };
 
 function copyStylesHtml() {
-  const nodes = Array.from(document.querySelectorAll("link[rel=stylesheet], style, link[rel=preload]"));
+  const nodes = Array.from(
+    document.querySelectorAll("link[rel=stylesheet], style, link[rel=preload]")
+  );
   const allowed = nodes.filter((n) => {
     if (n.tagName.toLowerCase() === "link") {
       const rel = (n as HTMLLinkElement).rel;
@@ -62,21 +65,21 @@ function inlineSvgComputedStyles(svg: SVGSVGElement) {
     const color = cs.getPropertyValue("color");
 
     try {
-      if (fill && fill !== "none") el.setAttribute("fill", fill);
-      else if ((!fill || fill === "none") && color) el.setAttribute("fill", color);
+      if (fill && fill !== "none") (el as SVGElement).setAttribute("fill", fill);
+      else if ((!fill || fill === "none") && color) (el as SVGElement).setAttribute("fill", color);
 
-      if (stroke && stroke !== "none") el.setAttribute("stroke", stroke);
-      if (strokeWidth) el.setAttribute("stroke-width", strokeWidth);
-      if (opacity && opacity !== "1") el.setAttribute("opacity", opacity);
+      if (stroke && stroke !== "none") (el as SVGElement).setAttribute("stroke", stroke);
+      if (strokeWidth) (el as SVGElement).setAttribute("stroke-width", strokeWidth);
+      if (opacity && opacity !== "1") (el as SVGElement).setAttribute("opacity", opacity);
 
       if (el.tagName.toLowerCase() === "text") {
-        if (fontSize) el.setAttribute("font-size", fontSize);
-        if (fontFamily) el.setAttribute("font-family", fontFamily.replace(/['"]/g, ""));
-        if (fontWeight) el.setAttribute("font-weight", fontWeight);
-        if (textAnchor) el.setAttribute("text-anchor", textAnchor);
+        if (fontSize) (el as SVGElement).setAttribute("font-size", fontSize);
+        if (fontFamily) (el as SVGElement).setAttribute("font-family", fontFamily.replace(/['"]/g, ""));
+        if (fontWeight) (el as SVGElement).setAttribute("font-weight", fontWeight);
+        if (textAnchor) (el as SVGElement).setAttribute("text-anchor", textAnchor);
       }
     } catch {
-    
+      // ignore inline set failures for some library-generated nodes
     }
   });
 
@@ -101,7 +104,34 @@ function inlineSvgComputedStyles(svg: SVGSVGElement) {
   }
 }
 
-export default function DownloadDashboardPdf({ dashboardRef }: Props) {
+/** Wait for images/fonts inside a document (or fragment) to load */
+async function waitForResources(doc: Document | ShadowRoot | HTMLElement) {
+  try {
+    const imgs = Array.from((doc as any).images || []);
+    await Promise.all(
+      imgs.map(
+        (img: HTMLImageElement) =>
+          new Promise<void>((res) => {
+            if (img.complete) return res();
+            img.onload = () => res();
+            img.onerror = () => res();
+          })
+      )
+    );
+
+    if ((doc as any).fonts && (doc as any).fonts.ready) {
+      await (doc as any).fonts.ready;
+    } else if ((document as any).fonts && (document as any).fonts.ready) {
+      await (document as any).fonts.ready;
+    }
+  } catch (err) {
+    console.warn("Resource loading issues before print:", err);
+  }
+}
+
+export default function DownloadDashboardPdf({
+  dashboardRef,
+}: Props) {
   const handlePrint = async () => {
     const target = dashboardRef?.current;
     if (!target) {
@@ -109,52 +139,124 @@ export default function DownloadDashboardPdf({ dashboardRef }: Props) {
       return;
     }
 
-    // Clone & sanitize content (same as before)
+    // 1) Clone and sanitize the node (same behavior as your original)
     const cloned = target.cloneNode(true) as HTMLElement;
     Array.from(cloned.querySelectorAll("*")).forEach((el) => sanitizeElementForPrint(el));
     const svgs = Array.from(cloned.querySelectorAll<SVGSVGElement>("svg"));
     svgs.forEach((svg) => inlineSvgComputedStyles(svg));
 
-    // Collect styles
+    // 2) Build styles and wrapper
     const stylesHtml = copyStylesHtml();
     const additional = `
       <style>
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         svg { shape-rendering: geometricPrecision; }
         * { filter: none !important; -webkit-filter: none !important; box-shadow: none !important; }
+        body { background: #fff; margin: 0; }
       </style>
     `;
 
-    // Build printable HTML
-    const html = `
+    const printableHtml = `
       <!doctype html>
       <html>
         <head>
+          <base href="${location.origin}">
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           ${stylesHtml}
           ${additional}
         </head>
-        <body style="background:#fff; margin:0;">
+        <body>
           ${cloned.innerHTML}
         </body>
       </html>
     `;
 
-    try {
-      await Printer.print({
-        content: html,
-        name: "Dashboard",
-        orientation: "portrait", // or "landscape"
-      });
-    } catch (err) {
-      console.error("Printer error:", err);
+    // wait for images/fonts inside the cloned fragment (so native print captures them)
+    // create a temporary container in DOM (hidden) to allow resources to load
+    const container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.left = "-9999px";
+    container.style.top = "-9999px";
+    container.style.opacity = "0";
+    container.style.pointerEvents = "none";
+    container.innerHTML = printableHtml;
+    document.body.appendChild(container);
+    await waitForResources(container);
+    // remove the helper container after resources loaded
+    document.body.removeChild(container);
+
+    // 3) If running in Capacitor native -> use native plugin
+    const isNative = Capacitor.isNativePlatform();
+    if (isNative) {
+      try {
+        // dynamic import - will fail harmlessly on web where plugin isn't installed
+        const printerModule: any = await import("@bcyesil/capacitor-plugin-printer").catch((e) => {
+          // plugin not found; try capawesome style package name fallback
+          return (globalThis as any).Printer ? { Printer: (globalThis as any).Printer } : null;
+        });
+
+        const Printer = printerModule?.Printer ?? (printerModule?.default ?? null);
+        if (!Printer || !Printer.print) {
+          console.warn(
+            "Printer plugin not available. Make sure you installed a capacitor printer plugin and ran `npx cap sync`."
+          );
+          // fallback to opening system browser to print (less ideal)
+          const w = window.open();
+          if (w) {
+            w.document.write(printableHtml);
+            w.document.close();
+            w.focus();
+            setTimeout(() => w.print(), 300);
+          }
+          return;
+        }
+
+        // call native print - plugin will show native print dialog where user can Save as PDF
+        await Printer.print({
+          content: printableHtml,
+          name: "Dashboard",
+          // plugin-specific options may be accepted; these are example fields
+          orientation: "portrait",
+          duplex: false,
+        });
+        return;
+      } catch (err) {
+        console.error("Native printer plugin error:", err);
+        // fallback to web print below
+      }
     }
+
+    // 4) Web/Desktop fallback: use the old window.open -> print approach
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Unable to open print window (popup blocked).");
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(printableHtml);
+    printWindow.document.close();
+
+    // Wait for resources in that new window
+    try {
+      await waitForResources(printWindow.document);
+    } catch {
+      /* ignored */
+    }
+
+    printWindow.focus();
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
   };
 
   return (
     <Button onClick={handlePrint} className="mt-0 mb-1 rounded-full">
-      Print / Save as PDF
+      Print / Save as PDF2
     </Button>
   );
 }
