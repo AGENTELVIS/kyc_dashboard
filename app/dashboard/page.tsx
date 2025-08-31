@@ -17,8 +17,8 @@ const Dashboard = () => {
         {/* Button sits in header — DOES NOT wrap or change layout */}
         <DownloadDashboardPdf dashboardRef={dashboardRef} buttonClassName="px-4 py-2" />
       </div>
-
-      <Breadcrumbs />
+      <div className=""><Breadcrumbs /></div>
+      
 
       <div
         ref={dashboardRef}

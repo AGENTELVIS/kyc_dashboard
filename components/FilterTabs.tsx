@@ -29,9 +29,9 @@ const FilterTabs = () => {
   }, [tab, date]);
 
   return (
-    <div className="flex gap-2 self-center">
+    <div className="flex-col gap-2 self-center sm:flex">
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="rounded-full mb-0">
+        <TabsList className="rounded-full sm:block">
           <TabsTrigger value="today" className="rounded-full text-xs font-semibold">
             Today
           </TabsTrigger>

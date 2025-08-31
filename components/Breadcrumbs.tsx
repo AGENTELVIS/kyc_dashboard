@@ -27,7 +27,7 @@ export function Breadcrumbs() {
 
   return (
     <div className="justify-between flex mt-0">
-      <Breadcrumb className="self-center mt-0">
+      <Breadcrumb className="self-center mt-0 hidden md:block">
         <BreadcrumbList className="flex self-center">
           <BreadcrumbItem>
             <BreadcrumbLink asChild>

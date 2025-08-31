@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
+import { Printer } from '@bcyesil/capacitor-plugin-printer';
 import React from "react";
 import { Button } from "@/components/ui/button";
 
@@ -101,9 +101,7 @@ function inlineSvgComputedStyles(svg: SVGSVGElement) {
   }
 }
 
-export default function DownloadDashboardPdf({
-  dashboardRef,
-}: Props) {
+export default function DownloadDashboardPdf({ dashboardRef }: Props) {
   const handlePrint = async () => {
     const target = dashboardRef?.current;
     if (!target) {
@@ -111,16 +109,13 @@ export default function DownloadDashboardPdf({
       return;
     }
 
+    // Clone & sanitize content (same as before)
     const cloned = target.cloneNode(true) as HTMLElement;
     Array.from(cloned.querySelectorAll("*")).forEach((el) => sanitizeElementForPrint(el));
     const svgs = Array.from(cloned.querySelectorAll<SVGSVGElement>("svg"));
     svgs.forEach((svg) => inlineSvgComputedStyles(svg));
 
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      alert("Unable to open print window (popup blocked).");
-      return;
-    }
+    // Collect styles
     const stylesHtml = copyStylesHtml();
     const additional = `
       <style>
@@ -130,58 +125,31 @@ export default function DownloadDashboardPdf({
       </style>
     `;
 
-    printWindow.document.open();
-    printWindow.document.write(`
+    // Build printable HTML
+    const html = `
       <!doctype html>
       <html>
         <head>
-          <base href="${location.origin}">
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
           ${stylesHtml}
           ${additional}
         </head>
         <body style="background:#fff; margin:0;">
+          ${cloned.innerHTML}
         </body>
       </html>
-    `);
-    printWindow.document.close();
-
-    const imported = printWindow.document.importNode(cloned, true);
-    printWindow.document.body.appendChild(imported);
+    `;
 
     try {
-      const imgs = Array.from(printWindow.document.images || []);
-      await Promise.all(
-        imgs.map(
-          (img) =>
-            new Promise<void>((res) => {
-              if (img.complete) return res();
-              img.onload = () => res();
-              img.onerror = () => res();
-            })
-        )
-      );
-
-      if ((printWindow.document as any).fonts && (printWindow.document as any).fonts.ready) {
-        await (printWindow.document as any).fonts.ready;
-      } else if ((document as any).fonts && (document as any).fonts.ready) {
-        await (document as any).fonts.ready;
-      }
+      await Printer.print({
+        content: html,
+        name: "Dashboard",
+        orientation: "portrait", // or "landscape"
+      });
     } catch (err) {
-      console.warn("Resource loading issues before print:", err);
+      console.error("Printer error:", err);
     }
-
-    printWindow.focus();
-
-    // Use onafterprint to close the window as soon as the user is done
-    printWindow.onafterprint = () => {
-      printWindow.close();
-    };
-
-    setTimeout(() => {
-      printWindow.print();
-    }, 300);
   };
 
   return (
