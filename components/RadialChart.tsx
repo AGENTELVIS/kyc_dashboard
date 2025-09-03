@@ -15,7 +15,7 @@ export const RadialChart: React.FC<Props> = ({ data, total, size = 360 }) => {
   const outerRadius = "100%";
 
   return (
-    <div className="flex items-center gap-4 w-full align-middle text-center self-center">
+    <div className="flex flex-col sm:flex-row items-center gap-4 w-full align-middle text-center self-center">
       <div
         className="relative align-middle text-center self-center flex-shrink-0 [&_.recharts-radial-bar-background-sector]:fill-[#e5e7eb] dark:[&_.recharts-radial-bar-background-sector]:fill-[#3f3f46]"
         style={{ width: size, height: size, minWidth: size, minHeight: size }}

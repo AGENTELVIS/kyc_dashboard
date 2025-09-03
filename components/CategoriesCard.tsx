@@ -47,7 +47,7 @@ const CategoriesCard = () => {
   return (
     <TooltipProvider>
       <Card className="mt-4 w-full flex mr-6" ref={dashboardRef}>
-        <div className="flex justify-between m-3 mt-0 mb-0 gap-26">
+        <div className="flex justify-between m-3 mt-0 mb-0 ">
           <h2 className="font-bold self-center mb-0">Categories</h2>
           <Tabs
             value={activeCategory}

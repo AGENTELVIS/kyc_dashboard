@@ -29,8 +29,8 @@ const SolicitedCard: React.FC = () => {
 
   return (
     <Card className=" p-3 pb-4 h-full">
-      <div className="flex items-center justify-between mb-0 mt-2">
-        <div className="flex gap-3">
+      <div className="flex-col sm:flex-row sm:flex items-center justify-between mb-0 mt-2 ">
+        <div className="flex gap-1 sm:gap-2 mb-2 ml-2">
           <button
             onClick={() => setSolType("solicited")}
             className={`text-sm font-semibold mb-0 ${

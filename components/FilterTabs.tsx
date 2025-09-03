@@ -29,9 +29,9 @@ const FilterTabs = () => {
   }, [tab, date]);
 
   return (
-    <div className="flex-col gap-2 self-center sm:flex">
+    <div className="flex-col sm:flex sm:flex-row text-right items-end  gap-2 self-center">
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="rounded-full sm:block">
+        <TabsList className="rounded-full">
           <TabsTrigger value="today" className="rounded-full text-xs font-semibold">
             Today
           </TabsTrigger>
@@ -43,13 +43,13 @@ const FilterTabs = () => {
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <div>
+      <div className="">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               id="date"
-              className="shadow-none w-48 justify-between font-normal rounded-full border-2 border-gray-300"
+              className="flex shadow-none w-48 justify-between font-normal rounded-full border-2 border-gray-300"
             >
               <div className="flex items-center gap-2">
                 <CalendarIcon className="h-4 w-4" />
