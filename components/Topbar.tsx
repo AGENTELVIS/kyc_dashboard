@@ -2,9 +2,11 @@
 
 "use client";
 import { Search, BellDot, ChevronDown } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState } from "react";
+import { Button } from "./ui/button";
+import { useUserContext } from "@/context/UserContext";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -15,10 +17,11 @@ const pageTitles: Record<string, string> = {
   "/notices": "Notices",
 };
 
-export default function Topbar() {
+export default function r() {
   const pathname = usePathname();
   const activePage = pageTitles[pathname] || "Dashboard";
   const [open, setOpen] = useState(false);
+  const {name} = useUserContext()
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-black dark:text-white border-b border-gray-200 dark:border-zinc-800 shadow-sm">
@@ -27,7 +30,9 @@ export default function Topbar() {
           {activePage}
         </h1>
         
+      
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+
           <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4" />
             <input
@@ -56,7 +61,7 @@ export default function Topbar() {
               />
               <div className="hidden lg:flex flex-col text-left min-w-0">
                 <p className="flex gap-2 items-center text-sm">
-                  <span className="truncate">John Doe</span>
+                  <span className="truncate" id="name" >{name}</span>
                   <ChevronDown className="h-4 w-4 flex-shrink-0" />
                 </p>
                 <span className="font-extralight text-xs text-neutral-800 dark:text-neutral-200 truncate">

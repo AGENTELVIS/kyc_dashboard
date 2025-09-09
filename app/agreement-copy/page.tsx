@@ -1,6 +1,10 @@
+import UsersPage from "@/lib/FakeApiNext"
+
 const page = () => {
   return (
-    <div>Agreement Copy</div>
+    <div>
+      <UsersPage/>
+    </div>
   )
 }
 

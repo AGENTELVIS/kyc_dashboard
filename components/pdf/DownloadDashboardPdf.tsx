@@ -318,7 +318,7 @@ export default function DownloadDashboardPdf({
         const Printer = printerModule?.Printer ?? (printerModule?.default ?? null);
         if (!Printer || !Printer.print) {
           console.warn(
-            "Printer plugin not available. Make sure you installed a capacitor printer plugin and ran `npx cap sync`."
+            "Printer plugin not available."
           );
           // fallback to web print
           const w = window.open();
