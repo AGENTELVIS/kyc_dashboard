@@ -43,7 +43,7 @@ function pickyesterdayBar(barChart: any) {
 export default function BarCharts() {
   const { getSection, rawData } = useDashboard();
   const [chartData, setChartData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -2,10 +2,9 @@
 
 "use client";
 import { Search, BellDot, ChevronDown } from "lucide-react";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { useState } from "react";
-import { Button } from "./ui/button";
 import { useUserContext } from "@/context/UserContext";
 
 const pageTitles: Record<string, string> = {
@@ -17,7 +16,7 @@ const pageTitles: Record<string, string> = {
   "/notices": "Notices",
 };
 
-export default function r() {
+export default function Topbar() {
   const pathname = usePathname();
   const activePage = pageTitles[pathname] || "Dashboard";
   const [open, setOpen] = useState(false);

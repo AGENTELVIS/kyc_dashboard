@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
@@ -60,6 +61,7 @@ export default function FakeApi(){
         <div>
             <input ref={inputRef} onChange={(e) => setSearch(e.target.value)} value={search} className="border-2 " ></input>
             {isloading && <p>Loading...</p> }
+            {error && <p>{error}</p> }
             {!isloading && (
                 <ul>
                     {filtered.map((user)=>(

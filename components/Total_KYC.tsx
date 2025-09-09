@@ -12,7 +12,7 @@ import { useDashboard } from "@/context/Filtercontext";
 
 export default function Total_KYC() {
   const { getSection, rawData } = useDashboard();
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
   const [activeCard, setActiveCard] = useState<"new" | "modified" | null>("new");
 
   // resolved section for current filter (e.g., today/thisMonth/yyy-mm-dd)

@@ -5,10 +5,6 @@ import React, { useCallback, useEffect, useMemo } from 'react'
 import {useState} from 'react'
 import Search from '@/components/Demo'
 
-type INum = {
-  num: number;
-  setNum: (num:number) => void;
-}
 
 const AllUsers = [
   'John',
@@ -31,13 +27,13 @@ function square1num(num:number){
 
 const users = Array.from({ length: 5 }, (_, i) => `User ${i + 1}`);
 
-const page = () => {
+const Page = () => {
   const [search,setSearch] = useState("")
   const [count,setCount] = useState(0)
   const {setName} = useUserContext()
   const [num,setNum] = useState(0)
-  const [Users, setUsers] = useState(AllUsers)
-  const num2 = square1num(num)
+  const [users, setUsers] = useState(AllUsers)
+ // const num2 = square1num(num)
   /*const [LargeItems1] = useState(LargeItems)
 
   const findSelected = LargeItems1.find((i) => i.isSelected)
@@ -49,7 +45,7 @@ const page = () => {
   );*/
 
   function HandleChange (text:string) {
-    console.log(Users[0]);
+    console.log(users[0]);
 
     const FilterUsers = AllUsers.filter((user) => (
       user.includes(text)
@@ -58,7 +54,7 @@ const page = () => {
   }
 
   //only renders search when search key changes
-  const CallBackChange = useCallback((HandleChange),[Users])
+  const CallBackChange = useCallback((HandleChange),[users])
 
   const filtered1 = useMemo(() => {
     return users.filter((u) =>
@@ -108,7 +104,7 @@ const page = () => {
         <button onClick={() => setUsers(AllUsers)} className='border bg-amber-300'>Set Users</button>
         <Search onChange={CallBackChange}/>
         <ul>
-          {Users.map((user) => (
+          {users.map((user) => (
             <li key={user}>{user}</li>
           )
           )}
@@ -117,4 +113,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
